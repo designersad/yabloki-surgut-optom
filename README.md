@@ -1,1 +1,0 @@
-# yabloki-surgut-optom
