@@ -617,7 +617,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] {
 <ul>
 <li><a href="#Добавлениевначало.🔼top"><strong>Добавление в начало.</strong> </a><a href="#top">🔼</a></li>
 <li><a href="#Добавлениевконец.🔼top"><strong>Добавление в конец.</strong> </a><a href="#top">🔼</a></li>
-<li><a href="#Удалениесписка.🔼top"><strong>Удаление списка.</strong> </a><a href="#top">🔼</a></li>
+<li><a href="#Удалениеэлементаизсписка.🔼top"><strong>Удаление элемента из списка.</strong> </a><a href="#top">🔼</a></li>
 <li><a href="#Освобождениесписка.🔼top"><strong>Освобождение списка.</strong> </a><a href="#top">🔼</a></li>
 <li><a href="#Вставкапередузлом.🔼top"><strong>Вставка перед узлом.</strong> </a><a href="#top">🔼</a></li>
 <li><a href="#Вставкапослеузла.🔼top"><strong>Вставка после узла.</strong> </a><a href="#top">🔼</a></li>
@@ -628,12 +628,7 @@ mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] {
 <ul>
 <li><a href="#Узелдерева.🔼top"><strong>Узел дерева.</strong> </a><a href="#top">🔼</a></li>
 <li><a href="#Сравнениесдеревом.🔼top"><strong>Сравнение с деревом.</strong> </a><a href="#top">🔼</a></li>
-<li><a href="#Рекурсивныйпоиск.🔼top"><strong>Рекурсивный поиск.</strong> </a><a href="#top">🔼</a></li>
-<li><a href="#Итеративныйпоиск.🔼top"><strong>Итеративный поиск.</strong> </a><a href="#top">🔼</a></li>
 <li><a href="#Добавлениеузла.🔼top"><strong>Добавление узла.</strong> </a><a href="#top">🔼</a></li>
-<li><a href="#Универсальныйобход.🔼top"><strong>Универсальный обход.</strong> </a><a href="#top">🔼</a></li>
-<li><a href="#Рекурсивноеудаление.🔼top"><strong>Рекурсивное удаление.</strong> </a><a href="#top">🔼</a></li>
-<li><a href="#Итеративноеудаление.🔼top"><strong>Итеративное удаление.</strong> </a><a href="#top">🔼</a></li>
 </ul>
 </li>
 <li><a href="#КучавСи.Алгоритмыработыmallocfree.Выравнивание.🔼top"><strong>Куча в Си. Алгоритмы работы <code>malloc</code>, <code>free</code>. Выравнивание.</strong> </a><a href="#top">🔼</a>
@@ -813,7 +808,7 @@ fputc(NEWLINE, <span class="hljs-built_in">stdout</span>);
 <li>Копирует <code>n</code> символов из объекта, на который указывает <code>s2</code> в объект, на который указывает <code>s1</code>;</li>
 <li>Копирование происходит путём создания временного массива из <code>n</code> символов объекта, на который указывает <code>s2</code>;</li>
 <li>Массив не перекрывает объекты, на которые указывают <code>s1</code> и <code>s2</code>;</li>
-<li>Далее из временного массива данные котируются в объект, на который указывает <code>s1</code>.</li>
+<li>Далее из временного массива данные копируются в объект, на который указывает <code>s1</code>.</li>
 </ul>
 
 <p><strong>Прототип:</strong></p>
@@ -2098,7 +2093,7 @@ FILE *<span class="hljs-keyword">restrict</span> stream)</span>;
 <li>В случае ошибки: Устанавливается флаг ошибки потока и функция возвращает <code>-1</code>.</li>
 </ul>
 
-<p><code>sprintf</code>, <code>snprintf</code>, <code>asprintf</code></p>
+<p><code>sprintf</code>, <code>snprintf</code>, <code>asprintf</code>.</p>
 
 <pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span>
 
@@ -2429,7 +2424,7 @@ book_copy(&amp;b, &amp;a);
 <p><strong>Линейный одноcвязный список</strong> – структура данных, состоящая из узлов, каждый из которых ссылается на следующий узел списка.</p>
 
 <figure>
-<img src="pics/Снимок%20экрана%202025-02-19%20в%2002.08.57.png" alt="">
+<img src="pics/Снимок%20экрана%202025-02-19%20в%2002.09.03.png" alt="">
 <figcaption></figcaption>
 </figure>
 
@@ -2458,18 +2453,21 @@ book_copy(&amp;b, &amp;a);
 
 <pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">int</span> <span class="hljs-title function_">push_front</span><span class="hljs-params">(node **head, <span class="hljs-type">int</span> value)</span>
 {
-    <span class="hljs-type">int</span> push_state = ERR_MEM;
-    node *new_node = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(node));
+    <span class="hljs-type">int</span> rc = OK;
+    node *new_node = <span class="hljs-literal">NULL</span>;
 
-    <span class="hljs-keyword">if</span> (new_node != <span class="hljs-literal">NULL</span>)
+    <span class="hljs-keyword">if</span> ((new_node = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(node))) == <span class="hljs-literal">NULL</span>)
+    {
+        rc = ERR_MEM;
+    }
+    <span class="hljs-keyword">else</span>
     {
         new_node-&gt;data = value;
         new_node-&gt;next = *head;
         *head = new_node;
-        push_state = OK;
     }
 
-    <span class="hljs-keyword">return</span> push_state;
+    <span class="hljs-keyword">return</span> rc;
 }
 </code></pre>
 
@@ -2477,163 +2475,161 @@ book_copy(&amp;b, &amp;a);
 
 <pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">int</span> <span class="hljs-title function_">push_back</span><span class="hljs-params">(node **head, <span class="hljs-type">int</span> value)</span>
 {
-    <span class="hljs-type">int</span> push_state = ERR_MEM;
-    node *new_node = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(node));
-    node *temp = *head;
-
-    <span class="hljs-keyword">if</span> (new_node != <span class="hljs-literal">NULL</span>)
+    <span class="hljs-type">int</span> rc = OK;
+    node *new_node = <span class="hljs-literal">NULL</span>;
+    
+    <span class="hljs-keyword">if</span> ((new_node = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(node))) == <span class="hljs-literal">NULL</span>)
     {
+        rc = ERR_MEM;
+    }
+    <span class="hljs-keyword">else</span>
+    {   
         new_node-&gt;data = value;
         new_node-&gt;next = <span class="hljs-literal">NULL</span>;
-
+        
         <span class="hljs-keyword">if</span> (*head == <span class="hljs-literal">NULL</span>)
         {
             *head = new_node;
         }
         <span class="hljs-keyword">else</span>
         {
-            <span class="hljs-keyword">while</span> (temp-&gt;next != <span class="hljs-literal">NULL</span>)
+            node *temp_node = *head;
+            
+            <span class="hljs-keyword">while</span> (temp_node-&gt;next != <span class="hljs-literal">NULL</span>)
             {
-                temp = temp-&gt;next;
+                temp_node = temp_node-&gt;next;
             }
-            temp-&gt;next = new_node;
+            
+            temp_node-&gt;next = new_node;
         }
-
-        push_state = OK;
     }
-
-    <span class="hljs-keyword">return</span> push_state;
+    
+    <span class="hljs-keyword">return</span> rc;
 }
 </code></pre>
 
-<h2 id="Удалениесписка.🔼top"><strong>Удаление списка.</strong> <a href="#top">🔼</a></h2>
+<h2 id="Удалениеэлементаизсписка.🔼top"><strong>Удаление элемента из списка.</strong> <a href="#top">🔼</a></h2>
 
-<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">void</span> <span class="hljs-title function_">free_list</span><span class="hljs-params">(node **head)</span>
+<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">int</span> <span class="hljs-title function_">remove_node</span><span class="hljs-params">(node **head, <span class="hljs-type">int</span> value)</span>
 {
-    node *temp;
+    <span class="hljs-type">int</span> rc = OK;
+    node *temp_node = *head;
+    node *prev_node = <span class="hljs-literal">NULL</span>;
 
-    <span class="hljs-keyword">while</span> (*head != <span class="hljs-literal">NULL</span>)
+    <span class="hljs-keyword">while</span> (temp_node != <span class="hljs-literal">NULL</span> &amp;&amp; temp_node-&gt;data != value)
     {
-        temp = *head;
-        *head = (*head)-&gt;next;
-        <span class="hljs-built_in">free</span>(temp);
+        prev_node = temp_node;
+        temp_node = temp_node-&gt;next;
     }
+
+    <span class="hljs-keyword">if</span> (temp_node == <span class="hljs-literal">NULL</span>)
+    {
+        rc = ERR_FIND;
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (prev_node == <span class="hljs-literal">NULL</span>)
+    {
+        *head = temp_node-&gt;next;
+    }
+    <span class="hljs-keyword">else</span>
+    {
+        prev_node-&gt;next = temp_node-&gt;next;
+    }
+
+	<span class="hljs-keyword">if</span> (temp_node != <span class="hljs-literal">NULL</span>)
+    {
+        <span class="hljs-built_in">free</span>(temp_node);
+    }
+    
+    <span class="hljs-keyword">return</span> rc;
 }
 </code></pre>
 
 <h2 id="Освобождениесписка.🔼top"><strong>Освобождение списка.</strong> <a href="#top">🔼</a></h2>
 
-<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">int</span> <span class="hljs-title function_">remove_if</span><span class="hljs-params">(node **head, <span class="hljs-type">int</span> value)</span>
+<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">void</span> <span class="hljs-title function_">free_node</span><span class="hljs-params">(node **head)</span>
 {
-    <span class="hljs-type">int</span> remove_state = ERR_EMPTY;
-    node *temp = *head;
-    node *prev = <span class="hljs-literal">NULL</span>;
+	node *temp_node = <span class="hljs-literal">NULL</span>;
 
-    <span class="hljs-keyword">while</span> (temp != <span class="hljs-literal">NULL</span> &amp;&amp; temp-&gt;data != value)
-    {
-        prev = temp;
-        temp = temp-&gt;next;
-    }
-
-    <span class="hljs-keyword">if</span> (temp != <span class="hljs-literal">NULL</span>)
-    {
-        <span class="hljs-keyword">if</span> (prev == <span class="hljs-literal">NULL</span>)
-        {
-            *head = temp-&gt;next;
-        }
-        <span class="hljs-keyword">else</span>
-        {
-            prev-&gt;next = temp-&gt;next;
-        }
-
-        <span class="hljs-built_in">free</span>(temp);
-        remove_state = OK;
-    }
-
-    <span class="hljs-keyword">return</span> remove_state;
+	<span class="hljs-keyword">while</span> (*head != <span class="hljs-literal">NULL</span>)
+	{
+		temp_node = *head;
+		*head = (*head)-&gt;next;
+		<span class="hljs-built_in">free</span>(temp_node);
+	}
 }
 </code></pre>
 
 <h2 id="Вставкапередузлом.🔼top"><strong>Вставка перед узлом.</strong> <a href="#top">🔼</a></h2>
 
-<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">int</span> <span class="hljs-title function_">insert_before</span><span class="hljs-params">(node **head, <span class="hljs-type">int</span> target, <span class="hljs-type">int</span> value)</span>
+<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">int</span> <span class="hljs-title function_">insert_before</span><span class="hljs-params">(node **head, <span class="hljs-type">int</span> value)</span>
 {
-    <span class="hljs-type">int</span> insert_state = ERR_EMPTY;
-    node *new_node = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(node));
-    node *temp = *head;
-    node *prev = <span class="hljs-literal">NULL</span>;
-
-    <span class="hljs-keyword">if</span> (new_node != <span class="hljs-literal">NULL</span>)
+    <span class="hljs-type">int</span> rc = OK;
+    node *temp_node = *head;
+    node *prev_node = <span class="hljs-literal">NULL</span>;
+    node *new_node = <span class="hljs-literal">NULL</span>;
+    
+    <span class="hljs-keyword">while</span> (temp_node != <span class="hljs-literal">NULL</span> &amp;&amp; temp_node-&gt;data != value)
     {
-        <span class="hljs-keyword">while</span> (temp != <span class="hljs-literal">NULL</span> &amp;&amp; temp-&gt;data != target)
-        {
-            prev = temp;
-            temp = temp-&gt;next;
-        }
+        prev_node = temp_node;
+        temp_node = temp_node-&gt;next;
+    }
 
-        <span class="hljs-keyword">if</span> (temp != <span class="hljs-literal">NULL</span>)
-        {
-            new_node-&gt;data = value;
-            new_node-&gt;next = temp;
-
-            <span class="hljs-keyword">if</span> (prev == <span class="hljs-literal">NULL</span>)
-            {
-                *head = new_node;
-            }
-            <span class="hljs-keyword">else</span>
-            {
-                prev-&gt;next = new_node;
-            }
-
-            insert_state = OK;
-        }
-        <span class="hljs-keyword">else</span>
-        {
-            <span class="hljs-built_in">free</span>(new_node);
-        }
+    <span class="hljs-keyword">if</span> (temp_node == <span class="hljs-literal">NULL</span>)
+    {
+        rc = ERR_FIND;
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ((new_node = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(node))) == <span class="hljs-literal">NULL</span>)
+    {
+        rc = ERR_MEM;
     }
     <span class="hljs-keyword">else</span>
     {
-        insert_state = ERR_MEM;
-    }
+        new_node-&gt;data = value;
+        new_node-&gt;next = temp_node;
 
-    <span class="hljs-keyword">return</span> insert_state;
+        <span class="hljs-keyword">if</span> (prev_node == <span class="hljs-literal">NULL</span>)
+        {
+            *head = new_node;
+        }
+        <span class="hljs-keyword">else</span>
+        {
+            prev_node-&gt;next = new_node;
+        }
+    }
+    
+    <span class="hljs-keyword">return</span> rc;
 }
 </code></pre>
 
 <h2 id="Вставкапослеузла.🔼top"><strong>Вставка после узла.</strong> <a href="#top">🔼</a></h2>
 
-<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">int</span> <span class="hljs-title function_">insert_after</span><span class="hljs-params">(node **head, <span class="hljs-type">int</span> target, <span class="hljs-type">int</span> value)</span>
+<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">int</span> <span class="hljs-title function_">insert_after</span><span class="hljs-params">(node **head, <span class="hljs-type">int</span> value)</span>
 {
-    <span class="hljs-type">int</span> insert_state = ERR_EMPTY;
-    node *new_node = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(node));
-    node *temp = *head;
+    <span class="hljs-type">int</span> rc = OK;
+    node *temp_node = *head;
+    node *new_node = <span class="hljs-literal">NULL</span>;
 
-    <span class="hljs-keyword">if</span> (new_node != <span class="hljs-literal">NULL</span>)
+    <span class="hljs-keyword">while</span> (temp_node != <span class="hljs-literal">NULL</span> &amp;&amp; temp_node-&gt;data != value)
     {
-        <span class="hljs-keyword">while</span> (temp != <span class="hljs-literal">NULL</span> &amp;&amp; temp-&gt;data != target)
-        {
-            temp = temp-&gt;next;
-        }
+        temp_node = temp_node-&gt;next;
+    }
 
-        <span class="hljs-keyword">if</span> (temp != <span class="hljs-literal">NULL</span>)
-        {
-            new_node-&gt;data = value;
-            new_node-&gt;next = temp-&gt;next;
-            temp-&gt;next = new_node;
-            insert_state = OK;
-        }
-        <span class="hljs-keyword">else</span>
-        {
-            <span class="hljs-built_in">free</span>(new_node);
-        }
+    <span class="hljs-keyword">if</span> (temp_node == <span class="hljs-literal">NULL</span>)
+    {
+        rc = ERR_FIND;
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ((new_node = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(node))) == <span class="hljs-literal">NULL</span>)
+    {
+        rc = ERR_MEM;
     }
     <span class="hljs-keyword">else</span>
     {
-        insert_state = ERR_MEM;
+        new_node-&gt;data = value;
+        new_node-&gt;next = temp_node-&gt;next;
+        temp_node-&gt;next = new_node;
     }
 
-    <span class="hljs-keyword">return</span> insert_state;
+    <span class="hljs-keyword">return</span> rc;
 }
 </code></pre>
 
@@ -2671,6 +2667,7 @@ book_copy(&amp;b, &amp;a);
 <pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">tree_node</span>
 {</span>
     <span class="hljs-type">int</span> data;
+    <span class="hljs-comment">// struct tree_node *parent;</span>
     <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">tree_node</span> *<span class="hljs-title">left</span>;</span>
     <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">tree_node</span> *<span class="hljs-title">right</span>;</span>
 } tree_node;
@@ -2696,13 +2693,16 @@ book_copy(&amp;b, &amp;a);
 <li>Средняя сложность операций <strong>O(log n)</strong>.</li>
 </ul>
 
-<p>Двоичное дерево поиска <strong>компромиссное решение</strong> между обычным деревом и сбалансированными структурами. Оно обеспечивает <strong>быстрый поиск</strong> при условии сбалансированности.</p>
+<figure>
+<img src="pics/Снимок%20экрана%202025-02-25%20в%2017.47.23.png" alt="">
+<figcaption></figcaption>
+</figure>
 
 <p><strong>DOT</strong> – язык описания графов.</p>
 
 <ul>
-<li>Граф, описанный на языке DOT, обычно представляет собой текстовый файл с расширением <code>.gv</code> в понятном для человека и обрабатывающей программы формате;</li>
-<li>В графическом виде графы, описанные на языке DOT, представляются с помощью специальных программ, например Graphviz.</li>
+<li>Граф, описанный на языке <strong>DOT</strong>, обычно представляет собой текстовый файл с расширением <code>.gv</code> в понятном для человека и обрабатывающей программы формате;</li>
+<li>В графическом виде графы, описанные на языке <strong>DOT</strong>, представляются с помощью специальных программ, например <strong>Graphviz</strong>.</li>
 </ul>
 
 <p><strong>Описание дерева на DOT.</strong></p>
@@ -2719,213 +2719,55 @@ digraph test_tree
 }
 </code></pre>
 
-<h2 id="Рекурсивныйпоиск.🔼top"><strong>Рекурсивный поиск.</strong> <a href="#top">🔼</a></h2>
-
-<pre><code class="c hljs language-c" data-highlighted="yes">tree_node *<span class="hljs-title function_">search_recursive</span><span class="hljs-params">(tree_node *root, <span class="hljs-type">int</span> value)</span>
-{
-    <span class="hljs-keyword">if</span> (root == <span class="hljs-literal">NULL</span> || root-&gt;data == value)
-    {
-        <span class="hljs-keyword">return</span> root;
-    }
-    
-    <span class="hljs-keyword">if</span> (value &lt; root-&gt;data)
-    {
-        <span class="hljs-keyword">return</span> search_recursive(root-&gt;left, value);
-    }
-    
-    <span class="hljs-keyword">return</span> search_recursive(root-&gt;right, value);
-}
-</code></pre>
-
-<h2 id="Итеративныйпоиск.🔼top"><strong>Итеративный поиск.</strong> <a href="#top">🔼</a></h2>
-
-<pre><code class="c hljs language-c" data-highlighted="yes">tree_node *<span class="hljs-title function_">search_iterative</span><span class="hljs-params">(tree_node *root, <span class="hljs-type">int</span> value)</span>
-{
-    <span class="hljs-keyword">while</span> (root != <span class="hljs-literal">NULL</span> &amp;&amp; root-&gt;data != value)
-    {
-        <span class="hljs-keyword">if</span> (value &lt; root-&gt;data)
-        {
-            root = root-&gt;left;
-        }
-        <span class="hljs-keyword">else</span>
-        {
-            root = root-&gt;right;
-        }
-    }
-
-    <span class="hljs-keyword">return</span> root;
-}
-</code></pre>
-
 <h2 id="Добавлениеузла.🔼top"><strong>Добавление узла.</strong> <a href="#top">🔼</a></h2>
 
-<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">int</span> <span class="hljs-title function_">insert</span><span class="hljs-params">(tree_node **root, <span class="hljs-type">int</span> value)</span>
+<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">int</span> <span class="hljs-title function_">insert</span><span class="hljs-params">(tree_node **root, tree_node *new_node)</span>
 {
-    <span class="hljs-type">int</span> insert_state = ERR_MEM;
+	<span class="hljs-type">int</span> rc = OK;
+	tree_node *temp_node = *root;
 
-    <span class="hljs-keyword">if</span> (*root == <span class="hljs-literal">NULL</span>)
-    {
-        *root = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(tree_node));
-        <span class="hljs-keyword">if</span> (*root != <span class="hljs-literal">NULL</span>)
-        {
-            (*root)-&gt;data = value;
-            (*root)-&gt;left = <span class="hljs-literal">NULL</span>;
-            (*root)-&gt;right = <span class="hljs-literal">NULL</span>;
-            insert_state = OK;
-        }
-    }
-    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (value &lt; (*root)-&gt;data)
-    {
-        insert_state = insert(&amp;(*root)-&gt;left, value);
-    }
-    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (value &gt; (*root)-&gt;data)
-    {
-        insert_state = insert(&amp;(*root)-&gt;right, value);
-    }
+	<span class="hljs-keyword">if</span> (new_node == <span class="hljs-literal">NULL</span>)
+	{
+		rc = ERR_PARAM;
+	}
+	<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (*root == <span class="hljs-literal">NULL</span>)
+	{
+		*root = new_node;
+	}
+	<span class="hljs-keyword">else</span>
+	{
+		<span class="hljs-keyword">while</span> (rc == OK &amp;&amp; temp_node != <span class="hljs-literal">NULL</span>)
+		{
+			<span class="hljs-keyword">if</span> (new_node-&gt;data &lt; temp_node-&gt;data)
+			{
+				<span class="hljs-keyword">if</span> (temp_node-&gt;left == <span class="hljs-literal">NULL</span>)
+				{
+					temp_node-&gt;left = new_node;
+				}
+				<span class="hljs-keyword">else</span>
+				{
+					temp_node = temp_node-&gt;left;
+				}
+			}
+			<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (new_node-&gt;data &gt; temp_node-&gt;data)
+			{
+				<span class="hljs-keyword">if</span> (temp_node-&gt;right == <span class="hljs-literal">NULL</span>)
+				{
+					temp_node-&gt;right = new_node;
+				}
+				<span class="hljs-keyword">else</span>
+				{
+					temp_node = temp_node-&gt;right;
+				}
+			}
+			<span class="hljs-keyword">else</span>
+			{
+				rc = ERR_DUPL;
+			}
+		}
+	}
 
-    <span class="hljs-keyword">return</span> insert_state;
-}
-</code></pre>
-
-<h2 id="Универсальныйобход.🔼top"><strong>Универсальный обход.</strong> <a href="#top">🔼</a></h2>
-
-<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">void</span> <span class="hljs-title function_">traverse_tree</span><span class="hljs-params">(tree_node *root, <span class="hljs-type">void</span> (*func)(tree_node *))</span>
-{
-    <span class="hljs-keyword">if</span> (root != <span class="hljs-literal">NULL</span>)
-    {
-        traverse_tree(root-&gt;left, func);
-        func(root);
-        traverse_tree(root-&gt;right, func);
-    }
-}
-</code></pre>
-
-<h2 id="Рекурсивноеудаление.🔼top"><strong>Рекурсивное удаление.</strong> <a href="#top">🔼</a></h2>
-
-<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">int</span> <span class="hljs-title function_">delete_recursive</span><span class="hljs-params">(node **root, <span class="hljs-type">int</span> value)</span>
-{
-    <span class="hljs-keyword">if</span> (*root == <span class="hljs-literal">NULL</span>)
-    {
-        <span class="hljs-keyword">return</span> ERR_EMPTY;
-    }
-
-    <span class="hljs-keyword">if</span> (value &lt; (*root)-&gt;data)
-    {
-        <span class="hljs-keyword">return</span> delete_recursive(&amp;(*root)-&gt;left, value);
-    }
-    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (value &gt; (*root)-&gt;data)
-    {
-        <span class="hljs-keyword">return</span> delete_recursive(&amp;(*root)-&gt;right, value);
-    }
-    <span class="hljs-keyword">else</span>
-    {
-        <span class="hljs-keyword">if</span> ((*root)-&gt;right == <span class="hljs-literal">NULL</span>)
-        {
-            node *temp = *root;
-            *root = (*root)-&gt;left;
-            <span class="hljs-built_in">free</span>(temp);
-        }
-        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ((*root)-&gt;left == <span class="hljs-literal">NULL</span>)
-        {
-            node *temp = *root;
-            *root = (*root)-&gt;right;
-            <span class="hljs-built_in">free</span>(temp);
-        }
-        <span class="hljs-keyword">else</span>
-        {
-            node *temp = find_min((*root)-&gt;right);
-            (*root)-&gt;data = temp-&gt;data;
-            <span class="hljs-keyword">return</span> delete_recursive(&amp;(*root)-&gt;right, temp-&gt;data);
-        }
-    }
-
-    <span class="hljs-keyword">return</span> OK;
-}
-</code></pre>
-
-<h2 id="Итеративноеудаление.🔼top"><strong>Итеративное удаление.</strong> <a href="#top">🔼</a></h2>
-
-<pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">int</span> <span class="hljs-title function_">delete_iterative</span><span class="hljs-params">(node **root, <span class="hljs-type">int</span> value)</span> 
-{
-    <span class="hljs-type">int</span> rc = OK;
-    node *parent = <span class="hljs-literal">NULL</span>;
-    node *current = *root;
-
-    <span class="hljs-keyword">while</span> (current != <span class="hljs-literal">NULL</span> &amp;&amp; current-&gt;data != value) 
-    {
-        parent = current;
-        <span class="hljs-keyword">if</span> (value &lt; current-&gt;data) 
-        {
-            current = current-&gt;left;
-        } 
-        <span class="hljs-keyword">else</span> 
-        {
-            current = current-&gt;right;
-        }
-    }
-
-    <span class="hljs-keyword">if</span> (current == <span class="hljs-literal">NULL</span>) 
-    {
-        rc = ERR_EMPTY;
-    } 
-    <span class="hljs-keyword">else</span> 
-    {
-        <span class="hljs-keyword">if</span> (current-&gt;right == <span class="hljs-literal">NULL</span>) 
-        {
-            <span class="hljs-keyword">if</span> (parent == <span class="hljs-literal">NULL</span>) 
-            {
-                *root = current-&gt;left;
-            } 
-            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parent-&gt;left == current) 
-            {
-                parent-&gt;left = current-&gt;left;
-            } 
-            <span class="hljs-keyword">else</span> 
-            {
-                parent-&gt;right = current-&gt;left;
-            }
-        } 
-        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (current-&gt;left == <span class="hljs-literal">NULL</span>) 
-        {
-            <span class="hljs-keyword">if</span> (parent == <span class="hljs-literal">NULL</span>) 
-            {
-                *root = current-&gt;right;
-            } 
-            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (parent-&gt;left == current) 
-            {
-                parent-&gt;left = current-&gt;right;
-            } 
-            <span class="hljs-keyword">else</span> 
-            {
-                parent-&gt;right = current-&gt;right;
-            }
-        } 
-        <span class="hljs-keyword">else</span> 
-        {
-            node *min_parent = current;
-            node *min_node = current-&gt;right;
-
-            <span class="hljs-keyword">while</span> (min_node-&gt;left != <span class="hljs-literal">NULL</span>) 
-            {
-                min_parent = min_node;
-                min_node = min_node-&gt;left;
-            }
-
-            current-&gt;data = min_node-&gt;data;
-            <span class="hljs-keyword">if</span> (min_parent-&gt;left == min_node) 
-            {
-                min_parent-&gt;left = min_node-&gt;right;
-            } 
-            <span class="hljs-keyword">else</span> 
-            {
-                min_parent-&gt;right = min_node-&gt;right;
-            }
-            current = min_node;
-        }
-        <span class="hljs-built_in">free</span>(current);
-    }
-
-    <span class="hljs-keyword">return</span> rc;
+	<span class="hljs-keyword">return</span> rc;
 }
 </code></pre>
 
@@ -3815,7 +3657,7 @@ PRINT_INT(i / j);
 
 <pre><code class="c hljs language-c" data-highlighted="yes"><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-type">int</span> <span class="hljs-title function_">add</span><span class="hljs-params">(<span class="hljs-type">int</span> a, <span class="hljs-type">int</span> b)</span>
 {
-<span class="hljs-keyword">return</span> a + b;
+	<span class="hljs-keyword">return</span> a + b;
 }
 </code></pre>
 
